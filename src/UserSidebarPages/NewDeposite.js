@@ -18,6 +18,8 @@ import bonus3 from '../img/Deposit account coin type/bonus-advantage-03.jpg'
 import bonus4 from '../img/Deposit account coin type/bonus-advantage-04.jpg'
 import { CgDanger } from 'react-icons/cg'
 import eth_currency from '../img/Deposit account coin type/ETH-currency.svg'
+import bank_transfer from '../img/bank-transfer.png'
+import bnb_image from '../img/bnb.png'
 
 function NewDeposite() {
   const accounts = ['1','2','3']
@@ -117,6 +119,14 @@ function NewDeposite() {
             <div className='deposite_coin_card' onClick={() => changeDiv('usdtt')}>
               <span><img src={usdtt} alt="" width='80px' height='40px' /></span>
               <span>Tether (TRC20)</span>
+            </div>
+            <div className='deposite_coin_card' onClick={() => changeDiv('usdtt')}>
+              <span><img src={bnb_image} alt="" width='80px' height='40px' /></span>
+              <span>BNB Coin (BNB)</span>
+            </div>
+            <div className='deposite_coin_card' onClick={() => changeDiv('usdtt')}>
+              <span><img src={bank_transfer} alt="" width='80px' height='40px' /></span>
+              <span>Bank Transfer </span>
             </div>
             {/* </div> */}
           </div>

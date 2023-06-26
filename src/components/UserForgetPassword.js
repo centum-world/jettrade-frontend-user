@@ -29,7 +29,7 @@ function UserForgetPassword(props) {
 
     const sendOtpFunction = () => {
         let data = {
-            userid: inputValue
+            phone: inputValue
         }
 
         if (inputValue === '') {
@@ -52,7 +52,7 @@ function UserForgetPassword(props) {
 
     const verifyOtpFunction = () => {
         let data = {
-            userid:inputValue,
+            phone:inputValue,
             otp: otpValue
         }
         console.log(data,'49');
@@ -80,7 +80,7 @@ function UserForgetPassword(props) {
 
     const resetPasswordFunction = () =>{
         let data = {
-            userid:inputValue,
+            phone:inputValue,
             newPassword:newPassword.password,
             confirmPassword:newPassword.confirmPassword
         }
@@ -126,7 +126,7 @@ function UserForgetPassword(props) {
                 footer={null}
             >
                 <div>
-                    <Input value={inputValue} placeholder='Enter UserID' onChange={forgetPasswordFuction} style={{marginBottom:'3px'}} />
+                    <Input value={inputValue} placeholder='Enter Mobile No' onChange={forgetPasswordFuction} style={{marginBottom:'3px'}} />
                     
                     <Button key="ok" type="primary" onClick={sendOtpFunction} disabled={userIdSubmitted}>
                         Submit

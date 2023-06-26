@@ -5,8 +5,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, NavLink } from 'react-router-dom';
 // import UserLogin from './UserLogin';
 import '../css/UserRegistration.css';
-import { Select, Input, Form, Radio, DatePicker, Button, Upload, message } from 'antd';
-import { MailOutlined, FlagOutlined,CalendarOutlined } from '@ant-design/icons';
+import { Select, Input, Form, Radio, DatePicker, Button, Upload, message, Switch, Spin } from 'antd';
+import { MailOutlined, FlagOutlined, CalendarOutlined } from '@ant-design/icons';
 import { FaAddressCard } from 'react-icons/fa';
 //import PhoneInput from 'react-phone-number-input'
 //import 'react-phone-number-input/style.css'
@@ -24,9 +24,10 @@ function UserRegistration() {
     );
     // -----------------------------
     const [phone, setPhone] = useState('')
-    
+
+
     const [userData, setUserData] = useState({
-        fname: "", lname: "", email: "", phone: "", address: "", gender: "", dob: "", aadhar_no: "", pan_no: "", invite_code: "", password: ""
+        fname: "", lname: "", email: "", phone: "", address: "", gender: "", dob: "", aadhar_no: "", pan_no: "", invite_code: "", userid: '', password: "", foregien_id: ''
     })
 
     const [panError, setPanError] = useState(false);
@@ -42,8 +43,12 @@ function UserRegistration() {
     const [panImage, setPanImage] = useState({
         file: null
     })
-
+    const [foregienCard, setForegienCard] = useState({
+        file1: null
+    })
+    const [spin, setSpin] = useState(false);
     const navigate = useNavigate();
+    const [checked, setChecked] = useState(false);
     //console.log(userData)
     const userInputs = e => {
         e.preventDefault();
@@ -85,6 +90,17 @@ function UserRegistration() {
         }
     }
 
+    // foregien card
+    const handleClickForeignCard = (e) => {
+        if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+            //preview shoe
+            setForegienCard({ file1: e.target.files[0] })
+        } else {
+            message.error("Invalid File !! ");
+            foregienCard.file1 = null;
+        }
+    }
+
 
     const pan = (e) => {
         e.preventDefault();
@@ -111,9 +127,17 @@ function UserRegistration() {
     function home() {
         navigate('/');
     }
+    const handleToggle = (checked) => {
+        setChecked(checked);
+        if (checked === false) {
+            setUserData({ ...userData, userid: '', password: '' })
+            //setUserData({...userData, password:''})
+        }
+    };
     const submit = (e) => {
+        setSpin(true)
         e.preventDefault();
-        console.log(userData, phone, aadharImage, aadharBackImage, panImage);
+        console.log(userData, foregienCard);
         const formData = new FormData();
         formData.append('fname', userData.fname);
         formData.append('lname', userData.lname);
@@ -122,25 +146,56 @@ function UserRegistration() {
         formData.append('address', userData.address);
         formData.append('gender', userData.gender);
         formData.append('dob', userData.dob);
-        formData.append('aadhar', userData.aadhar_no);
-        formData.append('aadhar_front_side', aadharImage.file);
-        formData.append('aadhar_back_side', aadharBackImage.file);
-        formData.append('pan_card', panImage.file);
-        formData.append('pan', userData.pan_no);
-        formData.append('password', userData.password);
-        //formData.append('pan_upload', userData.pan_upload);
+        // formData.append('aadhar', userData.aadhar_no);
+        // formData.append('aadhar_front_side', aadharImage.file);
+        // formData.append('aadhar_back_side', aadharBackImage.file);
+        // formData.append('pan_card', panImage.file);
+        // formData.append('pan', userData.pan_no);
+
         formData.append('reffered_id', userData.invite_code);
         console.log(formData, '44');
+        if (userData.userid === undefined && userData.password === undefined) {
+            formData.append('password', '');
+            formData.append('userid', '');
+        } else {
+            formData.append('password', userData.password);
+            formData.append('userid', userData.userid);
+        }
+        if (countryCode === '91') {
+            formData.append('aadhar', userData.aadhar_no);
+            formData.append('aadhar_front_side', aadharImage.file);
+            formData.append('aadhar_back_side', aadharBackImage.file);
+            formData.append('pan_card', panImage.file);
+            formData.append('pan', userData.pan_no);
+        } else {
+            formData.append('Id_No', userData.foregien_id);
+            formData.append('ID_Card', foregienCard.file1);
+        }
 
-        axios.post('/user/registration', formData)
-            .then((res) => {
-                message.success('Registration successful');
-                navigate('/paymentpage');
-                console.log(res.data)
-            }).catch((error) => {
-                //console.log(error.response.data)
-                message.warning(error.response.data.message)
-            })
+        if (countryCode === '91') {
+            axios.post('/user/registration', formData)
+                .then((res) => {
+                    message.success('Registration successful');
+                    navigate('/paymentpage');
+                    console.log(res.data)
+                    setSpin(false);
+                }).catch((error) => {
+                    //console.log(error.response.data)
+                    message.warning(error.response.data.message)
+                })
+        } else {
+            axios.post('/user/users/other-country-user-registration', formData)
+                .then((res) => {
+                    message.success('Registration successful');
+                    navigate('/paymentpage');
+                    console.log(res.data)
+                    setSpin(false);
+                }).catch((error) => {
+                    //console.log(error.response.data)
+                    message.warning(error.response.data.message)
+                })
+        }
+
     }
     //date of birth
     const handleDateOfBirthChange = (date, dateString) => {
@@ -155,6 +210,7 @@ function UserRegistration() {
     const [selectedOption, setSelectedOption] = useState('referral');
     const [referralId, setReferralId] = useState('');
     const officialId = 'admin@123'; // Replace with your official ID
+    const [countryCode, setCountryCode] = useState('')
 
     const handleDropdownChange = (value) => {
         setSelectedOption(value);
@@ -169,9 +225,16 @@ function UserRegistration() {
 
 
     const handlePhoneChange = (value) => {
+        const str = value;
+        const firstTwoLetters = str.substring(0, 2);
+        setCountryCode(firstTwoLetters);
         setPhone(value);
         setUserData({ ...userData, phone: value })
+
+
+
     };
+
 
 
 
@@ -314,74 +377,116 @@ function UserRegistration() {
                                     />
                                 </div>
                             </div>
-                            <div className='input_label'>
-                                <p>Aadhar No.</p>
-                                <Input
-                                    className='custom-placeholder-input'
-                                    placeholder="Enter Aadhar no."
-                                    type="text"
-                                    name='aadhar_no'
-                                    onChange={userInputs}
-                                    style={{ marginBottom: '10px' }}
+                            {/* ------------------------------------ */}
+                            {countryCode === '91' ? <>
+                                <div className='input_label'>
+                                    <p>Aadhar No.</p>
+                                    <Input
+                                        className='custom-placeholder-input'
+                                        placeholder="Enter Aadhar no."
+                                        type="text"
+                                        name='aadhar_no'
+                                        onChange={userInputs}
+                                        style={{ marginBottom: '10px' }}
+                                    />
+                                </div>
+
+                                <div className='aadhar-front'>
+                                    <p>Aadhar Front</p>
+                                    <div>
+                                        <Input
+                                            placeholder='Aadhar Front Image'
+                                            type="file"
+                                            //style={{ display: 'none' }}
+                                            onChange={handleClickAadharFrontImage}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className='aadhar-back'>
+                                    <p>Aadhar Back</p>
+                                    <div>
+                                        <Input
+                                            placeholder='Aadhar back Image'
+                                            type="file"
+                                            //style={{ display: 'none' }}
+                                            onChange={handleClickAadharBackImage}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className='input_label'>
+                                    <p>Pan No.</p>
+                                    <Input
+                                        className='custom-placeholder-input'
+                                        placeholder=" Enter Pan no."
+                                        type="text"
+                                        name='pan_no'
+                                        onChange={userInputs}
+                                        style={{ marginBottom: '10px' }}
+                                    //style={{ width: '500px', height: '40px' , marginBottom: '10px' }}
+                                    />
+                                </div>
+
+                                <div className='pan_card'>
+                                    <p>Pan Card</p>
+                                    <div>
+                                        <Input
+                                            placeholder='Pan card'
+                                            type="file"
+                                            //style={{ display: 'none' }}
+                                            onChange={handleClickPanCardImage}
+                                        />
+                                    </div>
+                                </div>
+                            </> : <>
+                                <div className='input_label'>
+                                    <p>ID Number</p>
+                                    <Input
+                                        className='custom-placeholder-input'
+                                        placeholder="Enter ID no."
+                                        type="text"
+                                        name='foregien_id'
+                                        onChange={userInputs}
+                                        style={{ marginBottom: '10px' }}
+
+                                    />
+                                </div>
+                                <div className='pan_card'>
+                                    <p>ID Card</p>
+                                    <div>
+                                        <Input
+                                            placeholder='Upload ID Card'
+                                            type="file"
+                                            //style={{ display: 'none' }}
+                                            onChange={handleClickForeignCard}
+                                        />
+                                    </div>
+                                </div>
+                            </>}
+
+                            {/* ---------------- */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+                                <p>Do you want to create User ID and password OR Bydefault</p>
+                                <Switch
+                                    checked={checked}
+                                    onChange={handleToggle}
                                 />
                             </div>
-
-
-                            {/* <Upload beforeUpload={handleClickAadharFrontImage}
-                                    className='aadhar_front_mobile'
-                                    
-                                    >
-                                    <Button icon={<UploadOutlined />}>Upload Aadhar Front</Button>
-                                </Upload> */}
-                            <div className='aadhar-front'>
-                                <p>Aadhar Front</p>
-                                <div>
+                            {checked ?
+                                <div className='password-input'>
+                                    <p>User ID</p>
                                     <Input
-                                        placeholder='Aadhar Front Image'
-                                        type="file"
-                                        //style={{ display: 'none' }}
-                                        onChange={handleClickAadharFrontImage}
+                                        className='custom-placeholder-input'
+                                        placeholder="Enter your user ID"
+                                        value={userData.userid}
+                                        name='userid'
+                                        onChange={userInputs}
+                                        style={{ marginBottom: '10px' }}
                                     />
-                                </div>
-                            </div>
+                                </div> : ''}
 
-                            <div className='aadhar-back'>
-                                <p>Aadhar Back</p>
-                                <div>
-                                    <Input
-                                        placeholder='Aadhar back Image'
-                                        type="file"
-                                        //style={{ display: 'none' }}
-                                        onChange={handleClickAadharBackImage}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className='input_label'>
-                                <p>Pan No.</p>
-                                <Input
-                                    className='custom-placeholder-input'
-                                    placeholder=" Enter Pan no."
-                                    type="text"
-                                    name='pan_no'
-                                    onChange={userInputs}
-                                    style={{ marginBottom: '10px' }}
-                                //style={{ width: '500px', height: '40px' , marginBottom: '10px' }}
-                                />
-                            </div>
-
-                            <div className='pan_card'>
-                                <p>Pan Card</p>
-                                <div>
-                                    <Input
-                                        placeholder='Pan card'
-                                        type="file"
-                                        //style={{ display: 'none' }}
-                                        onChange={handleClickPanCardImage}
-                                    />
-                                </div>
-                            </div>
-                            <div className='password-input'>
+                            {checked ? <div className='password-input'>
                                 <p>Password</p>
                                 <Input.Password
                                     className='custom-placeholder-input'
@@ -392,11 +497,12 @@ function UserRegistration() {
                                     onChange={userInputs}
                                     style={{ marginBottom: '10px' }}
                                 />
-                            </div>
+                            </div> : ''}
+                            {/* ----------------- */}
 
                             <div className="submit-footer">
 
-                                <Button type='primary' onClick={submit}>Register</Button>
+                                <Button type='primary' onClick={submit}>{spin ? <Spin style={{ color: 'white' }} /> : 'Register'}</Button>
                                 <Button style={{ backgroundColor: 'green', color: 'white' }} onClick={home}>Home</Button>
                                 <p style={{ float: 'right' }}>Already registered <NavLink to='/user-login' >Login</NavLink></p>
 

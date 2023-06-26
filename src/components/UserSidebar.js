@@ -1,28 +1,69 @@
 import React, { useState, useEffect, useContext } from 'react';
 import '../css/UserSidebar.css';
 import { motion } from "framer-motion";
-import { MdDashboard, MdSend, MdNightsStay } from 'react-icons/md';
-import { FaMoneyBillWaveAlt, FaBars, FaUserPlus } from 'react-icons/fa'
+import { MdDashboard, MdSend, MdNightsStay, MdSubscriptions } from 'react-icons/md';
+import { FaMoneyBillWaveAlt, FaBars, FaUserPlus, FaShare } from 'react-icons/fa'
 import { BsBellFill } from 'react-icons/bs'
 import { RxCountdownTimer } from 'react-icons/rx'
 import { TfiMenuAlt, TfiGift } from 'react-icons/tfi'
-import { IoTrophy } from 'react-icons/io5'
-import { BiStar } from 'react-icons/bi'
-import { AiOutlineSetting, AiFillBank } from 'react-icons/ai'
+import { AiOutlineSetting, AiFillBank,AiOutlineAreaChart } from 'react-icons/ai'
+import { BsFillChatTextFill } from 'react-icons/bs'
 import { NavLink } from 'react-router-dom';
 import UserSidebarMenu from './usersidebar/UserSidebarMenu';
 import { UserModal } from '../UserModel/UserModal';
-import { Modal } from 'antd'
+import { Modal, Row, Col, Button, message, Switch } from 'antd'
 import axios from 'axios';
-import { Switch } from 'antd';
-import { ThemeContext } from './Theme/ThemeProvider';
+
+import { useNavigate } from 'react-router-dom';
 
 
 const routes = [
+    // {
+    //     path:'/userdashboard/signals',
+    //     name:"Signal",
+    //     icon:<AiOutlineAreaChart/>,
+    // },
     {
         path: '/userdashboard/dashboard',
         name: "Dashboard",
         icon: <MdDashboard />,
+    },
+    {
+        path: '/userdashboard',
+        name: "Chart and Data",
+        icon: <AiOutlineAreaChart />,
+        subRoutes: [
+            {
+                path: "/userdashboard/cryptocurrency-market",
+                name: 'Cryptocurrency Market',
+            },
+            {
+                path: "/userdashboard/economic-celender",
+                name: 'Economic Celender',
+            },
+            {
+                path: "/userdashboard/heat-map",
+                name: 'Heat Map',
+            },
+            {
+                path: "/userdashboard/cross-rates",
+                name: 'Cross Rates',
+            },
+            // {
+            //     path: "/userdashboard/helper-charts",
+            //     name: 'Helper Charts',
+            // },
+            {
+                path: "/userdashboard/market-data",
+                name: 'Market Data',
+            },
+            {
+                path: "/userdashboard/screener",
+                name: 'Screener',
+            },
+
+
+        ],
     },
     {
         path: '/userdashboard/withdraw',
@@ -89,21 +130,21 @@ const routes = [
 
         ],
     },
-    {
-        path: '/userdashboard/contest',
-        name: "Contests",
-        icon: <IoTrophy />,
-        subRoutes: [
-            {
-                path: "/contests/champion-demo",
-                name: 'Champion Demo Contest',
-            },
-            {
-                path: "/contests/opne-champion-demo/account",
-                name: ' Opne Champion Demo Contest account',
-            },
-        ],
-    },
+    // {
+    //     path: '/userdashboard/contest',
+    //     name: "Contests",
+    //     icon: <IoTrophy />,
+    //     subRoutes: [
+    //         {
+    //             path: "/contests/champion-demo",
+    //             name: 'Champion Demo Contest',
+    //         },
+    //         {
+    //             path: "/contests/opne-champion-demo/account",
+    //             name: ' Opne Champion Demo Contest account',
+    //         },
+    //     ],
+    // },
     // {
     //     path: '/userdashboard/statuses',
     //     name: "User Statuses",
@@ -113,6 +154,11 @@ const routes = [
         path: '/userdashboard/invite',
         name: "Invite a friend",
         icon: <FaUserPlus />,
+    },
+    {
+        path: '/userdashboard/chat',
+        name: "Live Chat",
+        icon: <BsFillChatTextFill />,
     },
     // {
     //     path: '/copytrading',
@@ -124,27 +170,55 @@ const routes = [
         name: "Promocode",
         icon: <TfiGift />,
     },
+    {
+        path: '/userdashboard/refferal-payout',
+        name: "Refferal Payout",
+        icon: <FaShare />,
+    },
 
 ]
 
-function UserSidebar() {
-    
+function UserSidebar(props) {
+
+    const navigate = useNavigate();
+
     const [isOpen, setIsOpen] = useState(false);
+    const [isComponentOpen, setIsComponentOpen] = useState(false);
+    const [subcriptionDiv, setSubscriptionDiv] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [openNotificationModal, setOpenNotificationModal] = useState(false)
     const [allNotification, setAllNotification] = useState([]);
     const [allTraderNotification, setAllTraderNotification] = useState([]);
     const [particularTraderNotification, setParticularTraderNotification] = useState([]);
+    const [isSubscriptionModal, setIsSubscriptionModal] = useState(false);
+    const [paymentCountSubscription, setPaymentCountSubscripton] = useState({
+        userid: '',
+        payment: false,
+        expiry: '',
+        doj: '',
+        plan: Number
+    });
     const openModal = () => {
         setShowModal(true);
     };
     console.log(showModal);
 
     const toggle = () => setIsOpen(!isOpen);
+
+    useEffect(() => {
+        callApiToFetchUserData()
+
+    }, []);
+
+    // // renewelOnClick
+    // const renewelOnClick = () => {
+    //     console.log('ji')
+    //     props.onPaymentButtonClick();
+    // }
+
     const clickOnBell = () => {
         setOpenNotificationModal(true)
         callApiToFetchAllNotification();
-
     }
 
 
@@ -178,15 +252,188 @@ function UserSidebar() {
                 console.log(err)
             })
     }
+    //call api to fetch user data
+    const callApiToFetchUserData = () => {
+        const userid = localStorage.getItem("user");
+        const token = localStorage.getItem("token");
+        const data = {
+            _id: userid
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        axios.post('/user/fetch-user-details-userside', data, config)
+            .then((res) => {
+                setSubscriptionDiv(res.data.result.paymentCount)
+                const formattedDate = new Date(res.data.result.doj)
+                const addYear = formattedDate.setFullYear(formattedDate.getFullYear() + 1);
+                const finalYear = new Date(addYear).toLocaleDateString();
+                const dateOfJoining = new Date(res.data.result.doj)
+                const formattedDateOfJoining = new Date(dateOfJoining).toLocaleDateString();
+
+                setPaymentCountSubscripton({
+                    userid: res.data.result.userid,
+                    payment: res.data.result.paymentStatus,
+                    expiry: finalYear,
+                    doj: formattedDateOfJoining,
+                    plan: res.data.result.paymentCount
+
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+
+    //subscription 
+    const showSubscriptionModal = () => {
+        setIsSubscriptionModal(true)
+    }
+    const handleOkSubscriptionModal = () => {
+        setIsSubscriptionModal(false);
+    };
     // theme
+
     const [toggleValue, setToggleValue] = useState(false);
 
     const handleToggleChange = (checked) => {
         setToggleValue(checked);
     };
+    // -------------------------------------------
+
+    const renewelPayment = () => {
+
+        const data = {
+            amount: 1500,
+            order_id: "0d0254888555666",
+            currency: "INR",
+            payment_capture: 1,
+        }
+        axios.post('/user/users/user-create-payment', data)
+            .then(res => {
+                console.log(res.data, "29")
+                handleOpenRazorpay(res.data.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const handleOpenRazorpay = (data) => {
+        const options = {
+            key: 'rzp_test_RvU9CuKT2BsDrz',
+            amount: Number(data.amount) * 100,
+            currency: data.currency,
+            name: 'JETTRADE FX',
+            description: 'Software and service charge',
+            order_id: data.id,
+
+            handler: function (response) {
+                console.log(response, "26")
+                axios.post('/user/users/verify-payment', { response: response })
+                    .then(res => {
+                        // console.log(res, "37");
+                        // message.success(res.data.message)
+                        userPaymetSuccessStatus();
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        message.warning("Payment Failed")
+                    })
+            }
+        }
+        const razorpay = new window.Razorpay(options)
+        razorpay.open()
+    }
+
+
+    // user payment success status
+    const userPaymetSuccessStatus = () => {
+        const data = {
+            userid: localStorage.getItem('userid')
+        }
+        axios.post('/user/users/change-user-payment-status', data)
+            .then((res) => {
+                message.success(res.data.message)
+                navigate('/userdashboard/dashboard')
+            })
+            .catch((error) => {
+                message.error(error.response.data.message)
+            })
+    }
+    // ---------------------------------------
+
 
     return (
         <>
+            <div className='user-subscription-modal'>
+                <Modal
+                    title="Subscription plan"
+                    className='subscription-plan-title'
+                    open={isSubscriptionModal}
+                    onOk={handleOkSubscriptionModal}
+                    onCancel={handleOkSubscriptionModal}
+                    footer={null}
+
+                >
+
+                    {subcriptionDiv > 0 ?
+                        <>
+                            <Row style={{ marginBottom: '5px' }}>
+                                <Col span={12} style={{ fontWeight: 600, fontFamily: 'Calibri', fontSize: '16px' }} >
+                                    User ID :
+                                </Col>
+                                <Col span={12} style={{ color: '#5e72e4', fontWeight: 500, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    {paymentCountSubscription.userid}
+                                </Col>
+                            </Row>
+                            <Row style={{ marginBottom: '5px' }}>
+                                <Col span={12} style={{ fontWeight: 600, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    Subscription Plan :
+                                </Col>
+                                <Col span={12} style={{ color: '#5e72e4', fontWeight: 500, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    {paymentCountSubscription.plan === 1 ? 'INR 3500.00' : ''}
+                                    {paymentCountSubscription.plan > 1 ? 'INR 1500.00' : ''}
+                                </Col>
+                            </Row>
+                            <Row style={{ marginBottom: '5px' }}>
+                                <Col span={12} style={{ fontWeight: 600, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    Subscription :
+                                </Col>
+                                <Col span={12} style={{ color: paymentCountSubscription.payment ? 'green' : 'red', fontWeight: 500, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    {paymentCountSubscription.payment ? 'Running' : 'Expired'}
+                                </Col>
+                            </Row>
+                            <Row style={{ marginBottom: '5px' }}>
+                                <Col span={12} style={{ fontWeight: 600, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    Date of Joining :
+                                </Col>
+                                <Col span={12} style={{ color: '#5e72e4', fontWeight: 500, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    {paymentCountSubscription.doj}(mm/dd/yy)
+                                </Col>
+                            </Row>
+                            <Row style={{ marginBottom: '5px' }}>
+                                <Col span={12} style={{ fontWeight: 600, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    Expity Date :
+                                </Col>
+                                <Col span={12} style={{ color: '#5e72e4', fontWeight: 500, fontFamily: 'Calibri', fontSize: '16px' }}>
+                                    {paymentCountSubscription.expiry}(mm/dd/yy)
+                                </Col>
+                            </Row>
+
+                            <div>
+                                <Button type='primary' onClick={renewelPayment} disabled={paymentCountSubscription.payment}>Renewal</Button>
+
+                            </div>
+                        </>
+                        : <div style={{color:'red', textAlign:'center'}}>NO PLAN </div>}
+
+
+                </Modal>
+            </div>
             <div className='user-notification'>
                 <Modal
                     title="Notification"
@@ -195,6 +442,7 @@ function UserSidebar() {
                     onOk={handleOk}
                     onCancel={handleOk}
                     footer={null}
+                    style={{ cursor: 'pointer' }}
                 >
                     <p className='user-general-notification'>General Notification</p>
                     <div className='user-general-notification-section'>
@@ -266,16 +514,18 @@ function UserSidebar() {
 
                     </section>
 
-                    <div>
 
-                        <div className='d-flex'>
-                            <MdNightsStay style={{ fontSize: '25px', marginLeft: '15px' }} />
-                            {isOpen && <p style={{ marginLeft: '3px', fontWeight: '600', marginRight: '10px' }}>Theme</p>}
-                            {isOpen && <Switch checked={toggleValue} onChange={handleToggleChange} />}
-                           
-                        </div>
+                    <div className='d-flex' onClick={showSubscriptionModal} style={{ cursor: 'pointer' }} >
+                        <MdSubscriptions style={{ fontSize: '25px', marginLeft: '15px', marginTop: '10px' }} />
+                        {isOpen && <p style={{ marginLeft: '3px', fontWeight: '600', marginRight: '10px', marginTop: '10px' }}>Subscription</p>}
                     </div>
 
+                    <div className='d-flex' style={{ cursor: 'pointer' }}>
+                        <MdNightsStay style={{ fontSize: '25px', marginLeft: '15px' }} />
+                        {isOpen && <p style={{ marginLeft: '3px', fontWeight: '600', marginRight: '10px' }}>Theme</p>}
+                        {isOpen && <Switch checked={toggleValue} onChange={handleToggleChange} />}
+
+                    </div>
                 </motion.div>
 
 

@@ -30,6 +30,7 @@ function ChangePassword() {
       let data = {
         oldPassword: formData.oldPassword,
         newPassword: formData.newPassword,
+        token : token
         
       }
      // console.log(data);

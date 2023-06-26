@@ -31,10 +31,10 @@ export const UserModal = ({ setShowModal }) => {
                     <li style={{'padding-bottom':'30px'}}><NavLink to="/userdashboard/setting/verify"><MdOutlineVerifiedUser/>&nbsp;&nbsp;Profile verification</NavLink></li>
                     <li style={{'padding-bottom':'30px'}}><NavLink to="/userdashboard/setting/changepassword"><IoMdLock/>&nbsp;&nbsp;Change password</NavLink></li>
                     <li style={{'padding-bottom':'30px'}}><NavLink to="/userdashboard/setting/resetpassword"><GiAnticlockwiseRotation/>&nbsp;&nbsp;Reset password</NavLink></li>
-                    <li style={{'padding-bottom':'30px'}}><NavLink to="/userdashboard/setting/newsletter"><BiNews/>&nbsp;&nbsp;Newsletters</NavLink></li>
+                    {/* <li style={{'padding-bottom':'30px'}}><NavLink to="/userdashboard/setting/newsletter"><BiNews/>&nbsp;&nbsp;Newsletters</NavLink></li>
                     <li style={{'padding-bottom':'30px'}}><NavLink to="/userdashboard/setting/bonus"><BsStars/>&nbsp;&nbsp;Bonus setting</NavLink></li>
-                    <li style={{'padding-bottom':'30px'}}><NavLink to=""><FaUserCircle/>&nbsp;&nbsp;Account log</NavLink></li>
-                    <li><NavLink to=""><FaRegFlag/>&nbsp;&nbsp;Language</NavLink></li>
+                    <li style={{'padding-bottom':'30px'}}><NavLink to=""><FaUserCircle/>&nbsp;&nbsp;Account log</NavLink></li> */}
+                    {/* <li><NavLink to=""><FaRegFlag/>&nbsp;&nbsp;Language</NavLink></li> */}
                 </ul>
                 
             </div>

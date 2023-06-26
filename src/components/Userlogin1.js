@@ -6,6 +6,7 @@ import { NavLink,useNavigate } from 'react-router-dom';
 import Axios  from 'axios';
 import { UserContext } from '../App';
 
+
 const Userlogin1 = () => {
     const [show, setShow] = useState(true);
     const { state, dispatch } = useContext(UserContext);
@@ -65,6 +66,7 @@ const handleRememberMeChange = (event) => {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('userid', response.data.userLogin.userid);
                 localStorage.setItem('refferal',response.data.userLogin.refferal_id);
+                localStorage.setItem('userfname',response.data.userLogin.fname)
                 navigate('/userdashboard');
 
             }).catch((error) => {
@@ -149,6 +151,16 @@ const handleRememberMeChange = (event) => {
                             </div>
                         </div>
                     </div>
+
+                    {/* <div className='row'>
+                        <div className='col'>
+                            <div className='login-with-otp'>
+                                <NavLink to='/' >
+                                Or, Login with OTP
+                                </NavLink>
+                            </div>
+                        </div>
+                    </div> */}
 
                     <div className='row'>
                         <div className='home-signup col'>

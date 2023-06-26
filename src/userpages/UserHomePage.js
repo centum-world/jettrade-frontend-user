@@ -19,7 +19,7 @@ const UserHomePage = () => {
             <p>Primary account <span><AiOutlineQuestionCircle /></span> </p>
           </div>
           <div className='user_dashboard_account'>
-            <select class="form-select">
+            <select className="form-select">
               <option>----Select Status---</option>
               <option>Any Status</option>
               <option>Only Pending</option>
@@ -112,41 +112,51 @@ const UserHomePage = () => {
         <div className='user_dashboard_your_account_heading'>
           <h2>Your Account</h2><span><NavLink to='/'>CREATE ACCOUNT</NavLink></span>
         </div>
-        <div className='table create-account-table table-responsive'>
-          <thead>
-            <tr>
-              <th>Account</th>
-              <th>Type</th>
-              <th>Server</th>
-              <th>Balance</th>
-              <th>Equity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className='d-flex'><strong>MT</strong>&nbsp;<small>5</small> &nbsp;<span className='three-dot'><BsThreeDotsVertical/></span>&nbsp; <span>789565</span></td>
-              <td>
-                <div className='type-rate'>
-                  <span>Real</span>
-                </div>
-              </td>
-              <td>JettradeFXReal</td>
-              <td>$0.00</td>
-              <td>$0.00</td>
-            </tr>
-            <tr>
-              <td className='d-flex'><strong>MT</strong>&nbsp;<small>5</small> &nbsp;<span className='three-dot'><BsThreeDotsVertical/></span>&nbsp; <span>789565</span></td>
-              <td>
-                <div className='type-rate'>
-                  <span>Real</span>
-                </div>
-              </td>
-              <td>JettradeFXReal</td>
-              <td>$0.00</td>
-              <td>$0.00</td>
-            </tr>
-          </tbody>
+        <table className="create-account-table table-responsive">
+  <thead>
+    <tr>
+      <th>Account</th>
+      <th>Type</th>
+      <th>Server</th>
+      <th>Balance</th>
+      <th>Equity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td className="d-flex">
+        <strong>MT</strong>
+        <small>5</small>
+        &nbsp;<span className="three-dot"><BsThreeDotsVertical/></span>&nbsp;
+        <span>789565</span>
+      </td>
+      <td>
+        <div className="type-rate">
+          <span>Real</span>
         </div>
+      </td>
+      <td>JettradeFXReal</td>
+      <td>$0.00</td>
+      <td>$0.00</td>
+    </tr>
+    <tr>
+      <td className="d-flex">
+        <strong>MT</strong>
+        <small>5</small>
+        &nbsp;<span className="three-dot"><BsThreeDotsVertical/></span>&nbsp;
+        <span>789565</span>
+      </td>
+      <td>
+        <div className="type-rate">
+          <span>Real</span>
+        </div>
+      </td>
+      <td>JettradeFXReal</td>
+      <td>$0.00</td>
+      <td>$0.00</td>
+    </tr>
+  </tbody>
+</table>
 
       </div>
     </div>

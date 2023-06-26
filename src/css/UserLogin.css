@@ -40,6 +40,13 @@
     margin-top: 20px;
     background:#5e72e4;
 }
+.login-with-otp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
 .custom-placeholder-userid ::placeholder{
     color:#5e72e4;
 }
@@ -47,7 +54,7 @@
     color:#5e72e4; /* Replace with your desired color */
   }
   .home-signup  {
-    margin-top: 40px;
+    margin-top: 20px;
     display: flex;
     justify-content: space-between;
   }

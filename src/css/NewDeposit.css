@@ -481,6 +481,12 @@
     .bit-coin-para-two span{
         font-size: 18px;
     }
+    .deposite_coin_account_type {
+        display: grid;
+        grid-template-columns: repeat(1,1fr);
+        margin: 15px;
+        overflow-x: scroll;
+    }
     
 
 } 

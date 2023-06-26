@@ -72,6 +72,14 @@
     color: blueviolet;
     font-weight: 600;
   }
+
+  .subscription-plan-title .ant-modal-title {
+    color:blueviolet; 
+    font-weight: 600;
+    font-family: Calibri;
+    font-size: 20px;
+    font-style: italic;/* Change the color as desired */
+  }
 .deposit_button{
     height: 50px;
     width: 90%;
@@ -164,6 +172,12 @@ a{
     }
     to{
         transform: rotate(360deg);
+    }
+}
+
+@media only screen and (max-width:768px){
+    .main-container{
+        display: none;
     }
 }
 
