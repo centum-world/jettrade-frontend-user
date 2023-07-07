@@ -73,25 +73,25 @@ const MarketData = () => {
 
     return () => {
       const widgetContainer = document.querySelector('.tradingview-widget-container__widget');
-      if (widgetContainer.contains(script)) {
+      if (widgetContainer && widgetContainer.contains(script)) {
         widgetContainer.removeChild(script);
       }
     };
   }, []);
 
-    return (
-      <div className='market-data-heading'>
+  return (
+    <div className='market-data-heading'>
       <p style={{ fontFamily: 'Calibri', fontSize: '20px', fontWeight: 600, color: '#5e72e4' }}>Market Data</p>
       <div className='tradingview-widget-container'>
         <div className='tradingview-widget-container__widget'></div>
-        <div className='tradingview-widget-copyright'>
+        {/* <div className='tradingview-widget-copyright'>
           <a href='https://in.tradingview.com/' rel='noopener nofollow' target='_blank'>
             <span className='blue-text'>Track all markets on TradingView</span>
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
-    )
+  )
 }
 
 export default MarketData

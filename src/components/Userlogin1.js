@@ -66,7 +66,9 @@ const handleRememberMeChange = (event) => {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('userid', response.data.userLogin.userid);
                 localStorage.setItem('refferal',response.data.userLogin.refferal_id);
-                localStorage.setItem('userfname',response.data.userLogin.fname)
+                localStorage.setItem('userfname',response.data.userLogin.fname);
+                localStorage.setItem('userType',response.data.userLogin.userType);
+                
                 navigate('/userdashboard');
 
             }).catch((error) => {

@@ -11,7 +11,7 @@ import { BsFillChatTextFill } from 'react-icons/bs'
 import { NavLink } from 'react-router-dom';
 import UserSidebarMenu from './usersidebar/UserSidebarMenu';
 import { UserModal } from '../UserModel/UserModal';
-import { Modal, Row, Col, Button, message, Switch } from 'antd'
+import { Modal, Row, Col, Button, message, Switch,Badge } from 'antd'
 import axios from 'axios';
 
 import { useNavigate } from 'react-router-dom';
@@ -33,6 +33,10 @@ const routes = [
         name: "Chart and Data",
         icon: <AiOutlineAreaChart />,
         subRoutes: [
+            {
+                path:"/userdashboard/trading-chart",
+                name:"Trading Chart"
+            },
             {
                 path: "/userdashboard/cryptocurrency-market",
                 name: 'Cryptocurrency Market',
@@ -165,11 +169,11 @@ const routes = [
     //     name: "Copytrading",
     //     icon: <FaBullseye />,
     // },
-    {
-        path: '/promocode',
-        name: "Promocode",
-        icon: <TfiGift />,
-    },
+    // {
+    //     path: '/promocode',
+    //     name: "Promocode",
+    //     icon: <TfiGift />,
+    // },
     {
         path: '/userdashboard/refferal-payout',
         name: "Refferal Payout",
@@ -198,6 +202,8 @@ function UserSidebar(props) {
         doj: '',
         plan: Number
     });
+    const [notification,setNotification] = useState(0);
+    
     const openModal = () => {
         setShowModal(true);
     };
@@ -207,6 +213,8 @@ function UserSidebar(props) {
 
     useEffect(() => {
         callApiToFetchUserData()
+        callApiToFetchNotificationStatus()
+
 
     }, []);
 
@@ -219,6 +227,8 @@ function UserSidebar(props) {
     const clickOnBell = () => {
         setOpenNotificationModal(true)
         callApiToFetchAllNotification();
+        setNotificationFalse();
+        
     }
 
 
@@ -285,6 +295,51 @@ function UserSidebar(props) {
             .catch((error) => {
                 console.log(error)
             })
+    }
+
+    // callApiToFetchNotificationStatus
+    const callApiToFetchNotificationStatus = () => {
+        const userid = localStorage.getItem("userid");
+        const token = localStorage.getItem("token");
+        const data = {
+            userid: userid
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        axios.post('/user/users/fetch-user-notification-status',data,config)
+        .then((res)=> {
+            setNotification(res.data.isNotification);
+           
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+    }
+
+    // setNotificationFalse
+    const setNotificationFalse = () =>{
+        const userid = localStorage.getItem("userid");
+        const token = localStorage.getItem("token");
+        const data = {
+            userid: userid
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+
+        axios.post('/user/users/set-notification-to-false-user',data,config)
+        .then((res) => {
+            callApiToFetchNotificationStatus()
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+        
     }
 
 
@@ -365,7 +420,15 @@ function UserSidebar(props) {
             })
     }
     // ---------------------------------------
-
+    const options = {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      };
 
     return (
         <>
@@ -447,21 +510,21 @@ function UserSidebar(props) {
                     <p className='user-general-notification'>General Notification</p>
                     <div className='user-general-notification-section'>
                         {allNotification.map((object) => (
-                            <li key={object.id}><BsBellFill />&nbsp; {object.message}</li>
+                            <li key={object.id}> <div style={{ display: 'flex', justifyContent: 'space-between' }}><div><BsBellFill />&nbsp;{object.message}</div><div>{new Date(object.date).toLocaleString("en-IN", options)}</div> </div></li>
                         ))}
                     </div>
                     <br />
                     <p className='for-traders-notification'>For Traders</p>
                     <div className='for-traders-notification-section'>
                         {allTraderNotification.map((object) => (
-                            <li key={object.id}><BsBellFill />&nbsp; {object.message}</li>
+                            <li key={object.id}> <div style={{ display: 'flex', justifyContent: 'space-between' }}><div><BsBellFill />&nbsp;{object.message}</div><div>{new Date(object.date).toLocaleString("en-IN", options)}</div> </div></li>
                         ))}
                     </div>
                     <br />
                     <p className='for-trader-only-notification'>For You Only</p>
                     <div className='for-trader-only-notification-section'>
                         {particularTraderNotification.map((object) => (
-                            <li key={object.id}><BsBellFill />&nbsp; {object.message}</li>
+                            <li key={object.id}> <div style={{ display: 'flex', justifyContent: 'space-between' }}><div><BsBellFill />&nbsp;{object.message}</div><div>{new Date(object.date).toLocaleString("en-IN", options)}</div> </div></li>
                         ))}
                     </div>
                 </Modal>
@@ -479,8 +542,13 @@ function UserSidebar(props) {
 
                             </div>
                         }
-                        <div className='notification'>
+                        {/* <div className='notification'>
                             {isOpen && <BsBellFill onClick={clickOnBell} style={{ cursor: 'pointer' }} />}
+                        </div> */}
+                        <div className='notification'>
+                            <Badge count = {notification }>
+                          {isOpen && <BsBellFill onClick={clickOnBell} style={{ cursor: 'pointer' }} />}
+                            </Badge>
                         </div>
                         <div className='bars'>
                             <FaBars onClick={toggle} />

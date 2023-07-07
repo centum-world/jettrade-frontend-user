@@ -1,23 +1,22 @@
 import React, { useState, useEffect, createContext, useContext } from 'react'
 import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, NavLink,useParams } from 'react-router-dom';
 // import UserLogin from './UserLogin';
 import '../css/UserRegistration.css';
 import { Select, Input, Form, Radio, DatePicker, Button, Upload, message, Switch, Spin } from 'antd';
 import { MailOutlined, FlagOutlined, CalendarOutlined } from '@ant-design/icons';
-import { FaAddressCard } from 'react-icons/fa';
-//import PhoneInput from 'react-phone-number-input'
-//import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';
+
 const { TextArea } = Input;
 
 const { Option } = Select;
 export const UseParamContext = createContext();
 
 function UserRegistration() {
+    const id = useParams(); 
+    
     // --------------------------------------
     const customDobSuffixIcon = (
         <CalendarOutlined style={{ color: '#5e72e4' }} />
@@ -29,6 +28,7 @@ function UserRegistration() {
     const [userData, setUserData] = useState({
         fname: "", lname: "", email: "", phone: "", address: "", gender: "", dob: "", aadhar_no: "", pan_no: "", invite_code: "", userid: '', password: "", foregien_id: ''
     })
+    
 
     const [panError, setPanError] = useState(false);
     const [aadharError, setAadharError] = useState(false);
@@ -49,6 +49,8 @@ function UserRegistration() {
     const [spin, setSpin] = useState(false);
     const navigate = useNavigate();
     const [checked, setChecked] = useState(false);
+
+    
     //console.log(userData)
     const userInputs = e => {
         e.preventDefault();
@@ -223,6 +225,15 @@ function UserRegistration() {
         setUserData({ ...userData, invite_code: value })
     }
 
+    useEffect(()=>{
+        const reffer = id.inviteCode;
+        if(reffer){
+            setUserData({...userData, invite_code : id.inviteCode})
+            setReferralId(reffer)
+            console.log('hii');
+        }
+        
+    },[])
 
     const handlePhoneChange = (value) => {
         const str = value;
@@ -467,7 +478,7 @@ function UserRegistration() {
 
                             {/* ---------------- */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
-                                <p>Do you want to create User ID and password OR Bydefault</p>
+                                <p>Do you want to create User ID and password OR default</p>
                                 <Switch
                                     checked={checked}
                                     onChange={handleToggle}

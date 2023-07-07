@@ -156,7 +156,7 @@ function Navbar() {
                 <div className="container-fluid">
                     <div className="navbar-brand"><h3>JETTRADE FX</h3></div>
                     {/* ======================= */}
-                    <div className='small-sidebar'>
+                    {/*<div className='small-sidebar'>
 
                         <div>
                             <IconButton
@@ -175,12 +175,12 @@ function Navbar() {
                                 classes={{ paper: classes.drawer }}
                             >
                                 <div className={classes.drawerContent}>
-                                    {/* Drawer content goes here */}
+                                    
                                     hii
                                 </div>
                             </Drawer>
                         </div>
-                    </div>
+                    </div>*/}
                     {/* ======================== */}
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>

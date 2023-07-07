@@ -11,6 +11,7 @@ const { Option } = Select;
 
 
 const UserDetails = () => {
+  const [userType, setUserType] = useState('')
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsEditModalVisible] = useState(false);
   const id = localStorage.getItem('user');
@@ -23,6 +24,7 @@ const UserDetails = () => {
     address: '',
     aadhar: '',
     pan: '',
+    Id_no:'',
     dob: null,
   });
   //state for hadle image
@@ -45,7 +47,7 @@ const UserDetails = () => {
   // ---------
 
   useEffect(() => {
-
+    setUserType(localStorage.getItem('userType'))
     fetchData();
     fetchUserProfile(localStorage.getItem('userid'));
     fetchUserDetailsForEdit();
@@ -177,21 +179,37 @@ const UserDetails = () => {
     }
     axios.post('/user/users/edit-user-details', data, config)
       .then((result) => {
-        console.log(result.data.result[0].fname,
-          result.data.result[0].lname
+        console.log(result.data.result[0]
         );
-        setEditUserData(
-          {
-            fname: result.data.result[0].fname,
-            lname: result.data.result[0].lname,
-            phone: result.data.result[0].phone,
-            address: result.data.result[0].address,
-            dob: result.data.result[0].dob,
-            aadhar: result.data.result[0].aadhar,
-            pan: result.data.result[0].pan,
-            gender: result.data.result[0].gender,
-
-          })
+        if(userType === 'indian'){
+          setEditUserData(
+            {
+              fname: result.data.result[0].fname,
+              lname: result.data.result[0].lname,
+              phone: result.data.result[0].phone,
+              address: result.data.result[0].address,
+              dob: result.data.result[0].dob,
+              aadhar: result.data.result[0].aadhar,
+              pan: result.data.result[0].pan,
+              gender: result.data.result[0].gender,
+  
+            })
+        }
+        if(userType === 'otherCountry'){
+          setEditUserData(
+            {
+              fname: result.data.result[0].fname,
+              lname: result.data.result[0].lname,
+              phone: result.data.result[0].phone,
+              address: result.data.result[0].address,
+              dob: result.data.result[0].dob,
+              Id_no: result.data.result[0].Id_No,
+              gender: result.data.result[0].gender,
+  
+            })
+          
+        }
+        
 
       })
       .catch((error) => {
@@ -223,31 +241,63 @@ const UserDetails = () => {
   // save edit value
   const editModalSubmit = (e) => {
     e.preventDefault()
-    const data = {
-      userid : localStorage.getItem('userid'),
-      fname: editUserData.fname,
-      lname: editUserData.lname,
-      phone: editUserData.phone,
-      address: editUserData.address,
-      dob: editUserData.dob,
-      aadhar: editUserData.aadhar,
-      pan: editUserData.pan,
-      gender: editUserData.gender,
-    };
-    const token = localStorage.getItem('token')
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`, // Set the 'Authorization' header with the token
+    if(userType === 'indian'){
+      const data = {
+        userWhat:'indian',
+        userid : localStorage.getItem('userid'),
+        fname: editUserData.fname,
+        lname: editUserData.lname,
+        phone: editUserData.phone,
+        address: editUserData.address,
+        dob: editUserData.dob,
+        aadhar: editUserData.aadhar,
+        pan: editUserData.pan,
+        gender: editUserData.gender,
+      };
+      const token = localStorage.getItem('token')
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Set the 'Authorization' header with the token
+        }
       }
+      axios.post('/user/users/save-user-edited-details', data, config)
+      .then((res) => {
+        message.success('Updated Successfully');
+        setIsEditModalVisible(false);
+      })
+      .catch((err) => {
+        message.warning('Something went wrong!')
+      })
     }
-    axios.post('/user/users/save-user-edited-details', data, config)
-    .then((res) => {
-      message.success('Updated Successfully');
-      setIsEditModalVisible(false);
-    })
-    .catch((err) => {
-      message.warning('Something went wrong!')
-    })
+    if(userType === 'otherCountry'){
+      const data = {
+        userWhat:'other',
+        userid : localStorage.getItem('userid'),
+        fname: editUserData.fname,
+        lname: editUserData.lname,
+        phone: editUserData.phone,
+        address: editUserData.address,
+        dob: editUserData.dob,
+        Id_No:editUserData.Id_no,
+        gender: editUserData.gender,
+      };
+      const token = localStorage.getItem('token')
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Set the 'Authorization' header with the token
+        }
+      }
+      console.log(data);
+      axios.post('/user/users/save-user-edited-details', data, config)
+      .then((res) => {
+        message.success('Updated Successfully');
+        setIsEditModalVisible(false);
+      })
+      .catch((err) => {
+        message.warning('Something went wrong!')
+      })
+    } 
+    
 
   }
 
@@ -325,7 +375,7 @@ const UserDetails = () => {
                     <h6>Country</h6>
                   </div>
                   <div className='user_head_data'>
-                    <h6>IND</h6>
+                    {userType === 'indian'?<h6>IND</h6>:<h6>Other</h6>}
 
                   </div>
                 </div>
@@ -441,6 +491,8 @@ const UserDetails = () => {
                 </Col>
               </Row>
             </div>
+            {userType === 'indian' ? 
+            <>
             <div>
               <Row style={{ marginBottom: '5px' }}>
                 <Col span={12}>
@@ -461,6 +513,19 @@ const UserDetails = () => {
                 </Col>
               </Row>
             </div>
+            </>
+            :<>
+            <div>
+              <Row style={{ marginBottom: '5px' }}>
+                <Col span={12}>
+                  ID No. :
+                </Col>
+                <Col span={12}>
+                  <Input value={editUserData.Id_no} name='Id_no' onChange={editInputChange} placeholder="Enter Id no" />
+                </Col>
+              </Row>
+            </div>
+            </>}
             <div>
               <Row style={{ marginBottom: '5px' }}>
                 <Col span={12}>

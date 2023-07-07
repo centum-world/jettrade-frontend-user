@@ -166,6 +166,7 @@ a{
     
 }
 
+
 @keyframes rotate{
     from {
         transform: rotate(0deg);
@@ -175,11 +176,12 @@ a{
     }
 }
 
-@media only screen and (max-width:768px){
+
+/* @media only screen and (max-width:768px){
     .main-container{
         display: none;
     }
-}
+} */
 
 @media only screen and (max-width:576px){
     .deposit_button{
