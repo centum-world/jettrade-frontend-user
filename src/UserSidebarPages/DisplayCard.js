@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import '../css/DisplayCard.css';
 import axios from 'axios';
 import { FaRupeeSign } from 'react-icons/fa';
-import { Button, Modal, Dropdown, Menu } from 'antd';
+import {BsWallet2} from 'react-icons/bs';
+import { Button, Modal, Dropdown, Menu,Select,Input,message } from 'antd';
 
 
 
 
 const DisplayCard = () => {
+
     const handleMenuClick = (e) => {
         console.log(e.key);
         if (e.key === 'cryptocurrency-market') {
@@ -61,6 +63,9 @@ const DisplayCard = () => {
     const [totalWithdrawal, setTotalWithdrawal] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [refferalTeam, setRefferalTeam] = useState([]);
+    const[isAddMoneyToWalletModalVisible,setIsAddMoneyToWalletModalVisible] = useState();
+    const [money, setMoney] = useState(500);
+    const [tradingWallet, setTradingWallet] = useState(0);
 
     useEffect(() => {
         setUserDetails({ userid: localStorage.getItem('userid'), refferal: localStorage.getItem('refferal') })
@@ -81,6 +86,14 @@ const DisplayCard = () => {
         setIsModalVisible(false);
     };
 
+    //  Add money to wallet
+   const isAddMoneyToWalletModal = () => {
+    setIsAddMoneyToWalletModalVisible(true)
+    }
+
+    const addMoneyToWallethandleCancel = () => {
+        setIsAddMoneyToWalletModalVisible(false)
+    }
     const share = (url) => {
 
         // navigate('/user-registration/:inviteCode')
@@ -120,6 +133,12 @@ const DisplayCard = () => {
         }
         axios.post('/user/fetch-user-details-userside', data, config)
             .then((res) => {
+                const formattedTradingWallet = res.data.result.tradingWallet.toLocaleString('en-IN', {
+                    style: 'currency',
+                    currency: 'INR'
+                });
+                setTradingWallet(formattedTradingWallet)
+
                 setSubscription(res.data.result.paymentCount)
                 const walletAmount = res.data.result.wallet
                 const formattedAmount1 = walletAmount.toLocaleString('en-IN', {
@@ -207,6 +226,90 @@ const DisplayCard = () => {
             })
     }
 
+    // select money
+    const selectMoney = (value) =>{
+        setMoney(value);
+    }
+    const setMoneyFuction = (e) =>{
+        setMoney(e.target.value);
+    }
+
+    const handleOpenRazorpay = (data) => {
+        const options = {
+            key: 'rzp_test_RvU9CuKT2BsDrz',
+            amount: Number(data.money) * 100,
+            currency: data.currency,
+            name: 'JETTRADE FX',
+            description: 'Adding money to wallet',
+            order_id: data.id,
+
+            handler: function (response) {
+                console.log(response, "26")
+                axios.post('/user/users/verify-payment', { response: response })
+                    .then(res => {
+                         console.log(res.data, "37");
+                        // message.success(res.data.message)
+                        userPaymetSuccessStatus(money);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        message.warning("Payment Failed")
+                    })
+            }
+        }
+        const razorpay = new window.Razorpay(options)
+        razorpay.open()
+    }
+
+
+    const addMoneyToWallethandleOk = () =>{
+        if(money < 500){
+            alert('Minimum amount should be INR 500.00');
+        }else{
+            console.log(money);
+        const data = {
+            amount: money,
+            order_id: "0d0254888555666",
+            currency: "INR",
+            payment_capture: 1,
+        }
+        axios.post('/user/users/user-create-payment', data)
+            .then(res => {
+                console.log(res.data, "29")
+                handleOpenRazorpay(res.data.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        }
+    }
+
+
+    const userPaymetSuccessStatus = (amount) => {
+        console.log(amount);
+        const token = localStorage.getItem('token')
+        const data = {
+            userid: localStorage.getItem('userid'),
+            amount:amount
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        axios.post('/user/users/user-update-wallet-after-adding',data,config)
+        .then((res) => {
+            message.success(res.data.message)
+            setIsAddMoneyToWalletModalVisible(false);
+            setMoney(500);
+            fetchUserDataForSubscription();
+        })
+        .catch((error) => {
+            message.error(error.response.data.message)
+        })
+    }
+
+
     return (
         <>
             <div className='card1-container'>
@@ -290,7 +393,14 @@ const DisplayCard = () => {
 
                 <div className='card1'>
                     <div className='create-wallet'>
-                        <h6>Create wallet</h6>
+                        <h6>Wallet</h6>
+                    </div>
+                    <div className='d-flex'>
+                        <h6>Add Money :</h6>&nbsp;&nbsp; <span style={{color:'yellow',cursor:'pointer'}} onClick={isAddMoneyToWalletModal}><BsWallet2/>&nbsp;&nbsp;Cash</span>
+                        
+                    </div>
+                    <div className='d-flex'>
+                        <h6>Balance :</h6> &nbsp;&nbsp; <span style={{color:'yellow'}}>{tradingWallet}</span>
                     </div>
                 </div>
                 <div className='card1'>
@@ -327,11 +437,37 @@ const DisplayCard = () => {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 footer={null}
+                
             >
                 <div style={{ textAlign: "center" ,maxHeight: "300px", overflowY: "scroll"}}>
                     {refferalTeam.map((name, index) => (
                         <p key={index}>{index+1}.&nbsp;{name}</p>
                     ))}
+                </div>
+            </Modal>
+
+             {/* ----------------Add money to wallet */}
+             <Modal
+                title={<span style={{ color: "purple" }}>Add cash</span>}
+                open={isAddMoneyToWalletModalVisible}
+                onOk={addMoneyToWallethandleOk}
+                onCancel={addMoneyToWallethandleCancel}
+                okText="Pay Now"
+                
+            >
+                <div className='d-flex'>
+                    <div className='money-box' onClick={()=>{selectMoney(500)}}><FaRupeeSign/>500</div>
+                    <div className='money-box' onClick={()=>{selectMoney(1000)}}><FaRupeeSign/>1000</div>
+                    <div className='money-box' onClick={()=>{selectMoney(5000)}}><FaRupeeSign/>5000</div>
+                </div>
+                <div>
+                    <Input
+                        style={{marginTop:'10px', fontWeight: 'bold'}}
+                        addonBefore={<FaRupeeSign/>}
+                        placeholder="Enter amount in rupees..."
+                        value={money}
+                        onChange={setMoneyFuction}
+                    />
                 </div>
             </Modal>
         </>

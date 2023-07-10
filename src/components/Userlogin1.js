@@ -94,7 +94,8 @@ const handleRememberMeChange = (event) => {
         <>
             <div className='userLogin-page'>
                 <div className='userLogin-body'>
-                    <p>Sign in with credentials</p>
+                    <p>Welcome to JATTRADE FX</p>
+                    <h6>Sign in with credentials</h6>
                     <div className='row'>
                         <div className='col'>
                             <div className='userid-section form-group mb-3'>

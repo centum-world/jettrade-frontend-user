@@ -185,6 +185,7 @@ const routes = [
 function UserSidebar(props) {
 
     const navigate = useNavigate();
+    const [userName, setUserName] = useState('');
 
     const [isOpen, setIsOpen] = useState(false);
     const [isComponentOpen, setIsComponentOpen] = useState(false);
@@ -212,6 +213,7 @@ function UserSidebar(props) {
     const toggle = () => setIsOpen(!isOpen);
 
     useEffect(() => {
+        setUserName(localStorage.getItem('userfname'));
         callApiToFetchUserData()
         callApiToFetchNotificationStatus()
 
@@ -533,7 +535,7 @@ function UserSidebar(props) {
             <div className='main-container'>
                 <motion.div animate={{ width: isOpen ? '300px' : '50px' }} className='userSidebar'>
                     <div className='top_section'>
-                        {isOpen && <h1 className='logo'>Badal</h1>}
+                        {isOpen && <h1 className='logo' style={{color:'#5e72e4'}}>{userName}</h1>}
 
                         {isOpen &&
                             <div className='setting'>

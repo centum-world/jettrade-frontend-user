@@ -184,6 +184,7 @@ function UserRegistration() {
                 }).catch((error) => {
                     //console.log(error.response.data)
                     message.warning(error.response.data.message)
+                    setSpin(false);
                 })
         } else {
             axios.post('/user/users/other-country-user-registration', formData)
@@ -195,6 +196,7 @@ function UserRegistration() {
                 }).catch((error) => {
                     //console.log(error.response.data)
                     message.warning(error.response.data.message)
+                    setSpin(false);
                 })
         }
 
@@ -246,6 +248,17 @@ function UserRegistration() {
 
     };
 
+    const validateEmail = (rule, value, callback) =>{
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!value || emailRegex.test(value)){
+            callback();
+
+        }else{
+            callback('Please enter a valid email');
+        }
+    };
+
 
 
 
@@ -253,6 +266,7 @@ function UserRegistration() {
         <>
             <div className='registration-page'>
                 <div className='registration-body'>
+                 <h4>Welcome to JATTRADE FX</h4>
                     <p>Sign up with credentials</p>
                     <div className='form-content'>
                         <form>
@@ -268,7 +282,7 @@ function UserRegistration() {
                                 {selectedOption === 'official' && (
                                     <div >
 
-                                        <Input type="text" id="official-id" value={officialId} style={{ marginBottom: '10px', width: '100%' }} disabled />
+                                        <Input type="text" id="official-id" value={officialId} style={{ marginBottom: '10px', width: '100%', background:'white' }} disabled />
                                     </div>
                                 )}
 
@@ -331,6 +345,7 @@ function UserRegistration() {
                                     value={userData.email}
                                     onChange={userInputs}
                                     style={{ marginBottom: '10px' }}
+                                    onBlur={validateEmail}
                                 />
 
                             </div>
@@ -372,9 +387,9 @@ function UserRegistration() {
                                         onChange={userInputs}
                                         style={{ marginBottom: '10px' }}
                                     >
-                                        <Radio value="male">Male</Radio>
-                                        <Radio value="female">Female</Radio>
-                                        <Radio value="other">Other</Radio>
+                                        <Radio value="male" style={{color:'white'}}>Male</Radio>
+                                        <Radio value="female" style={{color:'white'}}>Female</Radio>
+                                        <Radio value="other" style={{color:'white'}}>Other</Radio>
                                     </Radio.Group>
                                 </div>
                                 <div className='gender-dob-section'>
@@ -515,7 +530,7 @@ function UserRegistration() {
 
                                 <Button type='primary' onClick={submit}>{spin ? <Spin style={{ color: 'white' }} /> : 'Register'}</Button>
                                 <Button style={{ backgroundColor: 'green', color: 'white' }} onClick={home}>Home</Button>
-                                <p style={{ float: 'right' }}>Already registered <NavLink to='/user-login' >Login</NavLink></p>
+                                <p style={{ float: 'right', color:'white' }}>Already registered <NavLink to='/user-login' style={{color:'white'}} >Login</NavLink></p>
 
                             </div>
                         </form>
