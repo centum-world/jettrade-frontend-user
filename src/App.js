@@ -47,6 +47,7 @@ import Screener from './UserSidebarPages/Screener';
 import LiveChat from './UserSidebarPages/LiveChat';
 import UserFirstChartPage from './userpages/UserFirstChartPage';
 import DisplayCard from './UserSidebarPages/DisplayCard';
+import UseridAndPasswordSave from './components/UseridAndPasswordSave';
 
 
 
@@ -130,6 +131,7 @@ function App() {
 
               <Route path="/user-registration/:inviteCode" element={<UserRegistration />} />
               <Route path='/user-login' element={<Userlogin1 />}></Route>
+              <Route path='/userid-and-password-save' element={<UseridAndPasswordSave/>}></Route>
 
               {/* <Route  path='/userdashboard' element={isloginUser === 'true'?<UserDashboard/>:<Home />}/> */}
               <Route path='/userdashboard' element={<Protected Component={UserDashboard} />}>

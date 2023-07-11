@@ -10,6 +10,7 @@
     background-position: center;
     animation: animationBg 5s linear infinite;
 }
+
 @keyframes animationBg {
     100%{
         filter: hue-rotate(360deg);
@@ -28,6 +29,9 @@
     font-family: Calibri;
     backdrop-filter: blur(15px);
 
+}
+.userLogin-body::-webkit-scrollbar{
+    display: none;
 }
 .userLogin-body p {
     text-align: center;

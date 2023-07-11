@@ -178,8 +178,11 @@ function UserRegistration() {
             axios.post('/user/registration', formData)
                 .then((res) => {
                     message.success('Registration successful');
-                    navigate('/paymentpage');
+                    localStorage.setItem('myuserid',res.data.userid);
+                    localStorage.setItem('mypassword',res.data.password);
+                    navigate('/userid-and-password-save');
                     console.log(res.data)
+                    
                     setSpin(false);
                 }).catch((error) => {
                     //console.log(error.response.data)
@@ -190,7 +193,9 @@ function UserRegistration() {
             axios.post('/user/users/other-country-user-registration', formData)
                 .then((res) => {
                     message.success('Registration successful');
-                    navigate('/paymentpage');
+                    localStorage.setItem('myuserid',res.data.userid);
+                    localStorage.setItem('mypassword',res.data.password);
+                    navigate('/userid-and-password-save');
                     console.log(res.data)
                     setSpin(false);
                 }).catch((error) => {
@@ -530,7 +535,7 @@ function UserRegistration() {
 
                                 <Button type='primary' onClick={submit}>{spin ? <Spin style={{ color: 'white' }} /> : 'Register'}</Button>
                                 <Button style={{ backgroundColor: 'green', color: 'white' }} onClick={home}>Home</Button>
-                                <p style={{ float: 'right', color:'white' }}>Already registered <NavLink to='/user-login' style={{color:'white'}} >Login</NavLink></p>
+                                <p style={{ float: 'right', color:'white' }}><NavLink to='/user-login' style={{color:'white'}} >Already registered Login</NavLink></p>
 
                             </div>
                         </form>

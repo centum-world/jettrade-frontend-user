@@ -30,7 +30,7 @@ const InviteFriend = () => {
     return (
         <>
 
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
 
                 <div>
                     <img src={share} alt="Image" onClick={handleImageClick} style={{ width: '225px', height: '225px' }} />

@@ -9,8 +9,14 @@
     width: 100%;
     height: auto;
     background: rgb(243,245,254);
+    overflow: scroll;
+   
 
 }
+.main_container::-webkit-scrollbar{
+    display: none;
+}
+
 .user_content_container{
     margin-left: 2px;
     justify-content: center;
